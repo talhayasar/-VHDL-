@@ -34,7 +34,6 @@
 -- of this material.
 ------------------------------------------------------------------------------
 -- 
-
 library ieee;                                	
 use ieee.std_logic_1164.all;           	
                                              		
@@ -43,13 +42,34 @@ entity Majority is port (
     Y: out std_logic);            		
 end Majority;                   	
 
-architecture behavioral of Majority is
-begin
-process (A,B,C)
-begin
-y<= (B AND C) OR (A AND C) OR (A AND B);
-end process;
-end behavioral;
+architecture behavioral of Majority is 
 
---without process, it doesn't pass.
---why is that? is there a problem when it works as concurrent without process?
+component and2
+	port (
+		i1,i2 : in std_logic;
+		o1 : out std_logic
+);
+end component;
+component or2 port (
+	i1,i2 : in std_logic;
+	o1 : out std_logic
+);
+end component;
+
+signal sig1,sig2,sig3,sig4 : std_logic;
+
+begin
+unit1 : and2
+	port map ( i1=>A, i2=>B, o1=>sig1 );
+unit2 : and2	
+	port map ( i1=>B, i2=>C, o1=>sig2 );
+unit3 : and2
+	port map ( i1=>A, i2=>C, o1=>sig3 );
+unit4 : or2
+	port map ( i1=>sig1, i2=>sig2, o1=>sig4);
+unit5 : or2
+	port map ( i1=>sig4, i2=>sig3, o1=>Y);
+
+end behavioral;
+-- we have to assume that there is a library with predesigned part which perform AND and or functions.
+--This is structural description.
